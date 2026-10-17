@@ -15,6 +15,30 @@ An interactive, single-file visualization of how the **nudged elastic band** met
 - Surface styles: shaded, line mesh only, faint + target MEP; light and dark themes
 - Everything in reduced units: length L₀, energy ε, force ε/L₀, spring constant ε/L₀²
 
+## Validation and run outcomes
+
+The page validates itself. On every load it runs seven checks with the same code as the simulation, and shows the results in a **Validation** panel:
+
+1. **Analytical gradients**: each surface's ∇V against central finite differences at 300 random points (max relative error ≈ 10⁻⁹).
+2. **Stationary points**: every drawn minimum and saddle has |∇V| ≈ 0 and the right Hessian signature (saddle: det H < 0; minimum: det H > 0, tr H > 0). Unverified points are not drawn.
+3. **NEB force decomposition**: |τ̂| = 1, F⊥ ⟂ τ̂, spring force ∥ τ̂, and the expected signs.
+4. **Climbing-image convergence**: at the climbing image |∇V| < threshold and det H < 0, on a validated saddle.
+5. **Path sensitivity**: 48 CI-NEB runs (4 initial paths × 2 image counts × 2 spring constants × 3 surfaces), all converging onto validated saddles.
+6. **Optimizer robustness**: both optimizers at three step sizes; no run is ever labelled converged unless it is on a validated saddle.
+7. **Degenerate band detection**: coincident images are flagged and the band is reported invalid.
+
+Each run ends with an explicit outcome, reported together with max |F| and the threshold:
+
+| Outcome | Meaning |
+|---|---|
+| **converged** | max \|F\| < threshold (for CI-NEB, also det H < 0 at the climbing image) |
+| **converged · not an MEP** | a comparison mode (plain elastic band, −∇V only) stopped; the true NEB F⊥ is reported |
+| **stalled** | max \|F\| has not improved for 1500 iterations |
+| **iteration limit** | 20 000 iterations without converging |
+| **invalid band** | coincident images or non-finite forces |
+
+Note: the minimum-energy path is a property of the potential-energy surface. At finite temperature, entropy and other free-energy effects can change the preferred pathway and barrier.
+
 ## Method
 
 For each interior image *i* with tangent τ̂ᵢ (improved tangent estimate):

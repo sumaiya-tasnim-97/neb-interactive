@@ -77,7 +77,9 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .stat b{display:block;font:600 15px ui-monospace,Menlo,monospace}
 .stat small{color:var(--muted);font-size:11.5px}
 .badge{display:inline-block;padding:2px 8px;border-radius:999px;font-size:12px;font-weight:600}
-.badge.ok{background:#2b8a3e;color:#fff}.badge.run{background:var(--accent2);color:#fff}.badge.idle{background:var(--chip);color:var(--muted)}
+.badge.ok{background:#2b8a3e;color:#fff}.badge.warn{background:#e8590c;color:#fff}.badge.bad{background:#c92a2a;color:#fff}
+.outc{margin-top:8px;padding:8px 10px;border-radius:8px;font-size:13.5px;line-height:1.45;background:var(--chip);border-left:4px solid var(--muted)}
+.outc.ok{border-left-color:#2b8a3e}.outc.warn{border-left-color:#e8590c}.outc.bad{border-left-color:#c92a2a}.badge.run{background:var(--accent2);color:#fff}.badge.idle{background:var(--chip);color:var(--muted)}
 .sel{font:12.5px ui-monospace,Menlo,monospace;color:var(--muted);margin-top:8px;min-height:3.2em;white-space:pre-wrap}
 .explain p{margin:6px 0}
 .explain ul{margin:6px 0;padding-left:18px}
@@ -85,6 +87,16 @@ input[type=range]{width:100%;accent-color:var(--accent)}
 .eq{font:13px ui-monospace,Menlo,monospace;background:var(--chip);padding:6px 8px;border-radius:6px;display:block;margin:6px 0;overflow-x:auto}
 .stack>*+*{margin-top:14px}
 section.card{margin-top:14px}
+table.vt{width:100%;border-collapse:collapse;font-size:14px;margin-top:8px}
+table.vt th{text-align:left;font-size:12px;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);font-weight:600;padding:6px 8px;border-bottom:1px solid var(--line)}
+table.vt td{padding:8px;border-bottom:1px solid var(--line);vertical-align:top}
+table.vt td.r{min-width:110px}
+table.vt td.r b{display:block;white-space:nowrap}
+table.vt .d{display:block;font:12.5px ui-monospace,Menlo,monospace;color:var(--muted);margin-top:4px}
+table.vt td:first-child{width:20%}table.vt td:nth-child(2){width:38%}
+.pass{color:#2b8a3e}.fail{color:#c92a2a}.pend{color:var(--muted)}
+#vSummary{font-size:13px;text-transform:none;letter-spacing:0;margin-left:8px}
+@media (max-width:700px){table.vt td:nth-child(2),table.vt th:nth-child(2){display:none}}
 .introcard{margin-bottom:14px;font-size:15px;line-height:1.6}
 .introcard p{margin:8px 0;max-width:1100px}
 .introcard ol{margin:8px 0;padding-left:22px;max-width:1100px}
@@ -113,13 +125,13 @@ footer a{color:var(--accent2)}
 </header>
 <section class="card introcard" id="intro">
   <h2>Introduction</h2>
-  <p>Chemical reactions, diffusion hops and conformational changes all take a system from one energy minimum to another. The most likely route between them is the <b>minimum-energy path (MEP)</b>: the path that runs along the valley floor of the potential-energy surface, so that at every point the force perpendicular to the path is zero. The highest point on the MEP is a first-order <b>saddle point</b> (transition state), and its height above the reactant gives the activation barrier ΔE‡ that enters transition-state theory rates.</p>
-  <p>The <b>nudged elastic band (NEB)</b> method finds the MEP by relaxing a chain of intermediate configurations (“images”) connected by springs<sup class="c"><a href="#ref1">[1</a>,<a href="#ref2">2]</a></sup>. A plain elastic band<sup class="c"><a href="#ref3">[3]</a></sup> fails because springs pull the chain off the curved valley (corner-cutting) while the true force drags images down into the minima. NEB fixes both with a projection — the “nudge”: each image keeps only the <em>perpendicular</em> part of the true force and only the <em>parallel</em> part of the spring force. A stable tangent estimate<sup class="c"><a href="#ref4">[4]</a></sup> and the <b>climbing-image</b> modification<sup class="c"><a href="#ref5">[5]</a></sup>, which drives the highest image exactly onto the saddle, make up the method used in practice (e.g. in VASP/VTST and ASE<sup class="c"><a href="#ref8">[8</a>,<a href="#ref9">9]</a></sup>).</p>
+  <p>Chemical reactions, diffusion hops and conformational changes all take a system from one energy minimum to another. On the potential-energy surface, the reference route between them is the <b>minimum-energy path (MEP)</b>: the path that runs along the valley floor, so that at every point the force perpendicular to the path is zero. The highest point on the MEP is a first-order <b>saddle point</b> (transition state); its height above the reactant is the potential-energy barrier ΔE‡ used in harmonic transition-state theory. The MEP is a property of the potential energy alone: at finite temperature, entropy and other free-energy effects can change which pathway is preferred and how high its barrier is. Like standard NEB, this page works on the potential-energy surface.</p>
+  <p>The <b>nudged elastic band (NEB)</b> method finds the MEP by relaxing a chain of intermediate configurations (“images”) connected by springs<sup class="c"><a href="#ref1">[1</a>,<a href="#ref2">2]</a></sup>. A plain elastic band<sup class="c"><a href="#ref3">[3]</a></sup> fails because springs pull the chain off the curved valley (corner-cutting) while the true force drags images down into the minima. NEB fixes both with a projection — the “nudge”: each image keeps only the <em>perpendicular</em> part of the true force and only the <em>parallel</em> part of the spring force. A stable tangent estimate<sup class="c"><a href="#ref4">[4]</a></sup> and the <b>climbing-image</b> modification<sup class="c"><a href="#ref5">[5]</a></sup>, which drives the highest-energy image toward a first-order saddle point (the result should then be verified; see <a href="#validation">Validation</a>), make up the method used in practice (e.g. in VASP/VTST and ASE<sup class="c"><a href="#ref8">[8</a>,<a href="#ref9">9]</a></sup>).</p>
   <p>This page runs NEB live on three 2D toy surfaces, including the classic <b>Müller–Brown</b> potential<sup class="c"><a href="#ref6">[6]</a></sup>, so every vector can be seen. How to use it:</p>
   <ol>
     <li>Press <b>Run</b> (or <b>Step</b>) and watch the white band slide into the valley. Rotate the 3D surface by dragging, or switch to the 2D contour view.</li>
     <li>Tap any image to see its unit tangent τ̂ and the net force resolved into F⊥ and F∥, with values in reduced units.</li>
-    <li>Switch <b>Method</b> to Climbing-image NEB to locate the saddle exactly, or to the plain elastic band to see why nudging is needed.</li>
+    <li>Switch <b>Method</b> to Climbing-image NEB to converge the top image onto the saddle point, or to the plain elastic band to see why nudging is needed.</li>
     <li>Use the <b>Convergence</b> tab to watch the forces decay, and tighten the stopping threshold to drive F⊥ toward zero. The optimizer is quick-min<sup class="c"><a href="#ref7">[7]</a></sup>.</li>
   </ol>
 </section>
@@ -152,8 +164,8 @@ footer a{color:var(--accent2)}
           <div class="ki"><svg viewBox="0 0 50 22"><circle cx="25" cy="11" r="5.2" fill="#fff" stroke="#111" stroke-width="1.8"/></svg><div><b>Image</b> — a moving replica R<sub>i</sub> = (x, y) [L₀] at energy E(R<sub>i</sub>) [ε].</div></div>
           <div class="ki"><svg viewBox="0 0 50 22"><path d="M25 2 L27.5 8.4 L33.6 8.2 L28.8 12.6 L30.3 19 L25 15.3 L19.7 19 L21.2 12.6 L16.4 8.2 L22.5 8.4Z" fill="#ffd43b" stroke="#111" stroke-width="1.6"/></svg><div><b>Climbing image (CI)</b> — appears only when Method = Climbing-image NEB: the highest-energy image, tagged “CI”, converges onto the saddle.</div></div>
           <div class="ki"><svg viewBox="0 0 50 22"><circle cx="25" cy="11" r="5" fill="#fff" stroke="#111" stroke-width="1.6"/><circle cx="25" cy="11" r="9" fill="none" stroke="#ff8c42" stroke-width="2.4"/></svg><div><b>Selected image</b> — tap an image; its arrows are drawn thicker and its numbers appear under Status.</div></div>
-          <div class="ki"><svg viewBox="0 0 50 22"><path d="M19 5 L31 17 M31 5 L19 17" stroke="#000" stroke-width="4" stroke-linecap="round"/><path d="M19 5 L31 17 M31 5 L19 17" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg><div><b>Saddle point (TS)</b> — exact first-order saddle, found by Newton’s method; label gives E [ε].</div></div>
-          <div class="ki"><svg viewBox="0 0 50 22"><circle cx="25" cy="11" r="5" fill="none" stroke="#fff" stroke-width="1.6"/></svg><div><b>Minimum</b> — exact local minimum of E.</div></div>
+          <div class="ki"><svg viewBox="0 0 50 22"><path d="M19 5 L31 17 M31 5 L19 17" stroke="#000" stroke-width="4" stroke-linecap="round"/><path d="M19 5 L31 17 M31 5 L19 17" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg><div><b>Saddle point (TS)</b> — first-order saddle found by Newton’s method and verified (|∇V| ≈ 0, det H &lt; 0); label gives E [ε]. Unverified points are not drawn.</div></div>
+          <div class="ki"><svg viewBox="0 0 50 22"><circle cx="25" cy="11" r="5" fill="none" stroke="#fff" stroke-width="1.6"/></svg><div><b>Minimum</b> — local minimum of E, verified (|∇V| ≈ 0, det H &gt; 0, tr H &gt; 0).</div></div>
         </div>
         <div>
           <h3>Lines &amp; surface</h3>
@@ -191,7 +203,7 @@ footer a{color:var(--accent2)}
       <div class="legend" id="lgProf">
         <span><i class="sw" style="background:var(--accent);outline:0"></i>current band, E [ε] vs arc length s [L₀] (cubic interpolation using tangential forces)</span>
         <span><i class="sw" style="background:var(--muted);opacity:.6;outline:0"></i>initial band</span>
-        <span><i class="sw" style="background:var(--accent2);outline:0"></i>exact saddle energies [ε]</span>
+        <span><i class="sw" style="background:var(--accent2);outline:0"></i>validated saddle energies [ε]</span>
         <span><i class="sw" style="background:#cc5de8;outline:0"></i>target MEP</span>
       </div>
     </div>
@@ -202,7 +214,7 @@ footer a{color:var(--accent2)}
       <span class="eq">F⊥ = −∇V(R<sub>i</sub>) + (∇V·τ̂) τ̂</span>
       <span class="eq">F<sup>s</sup>∥ = k (|R<sub>i+1</sub>−R<sub>i</sub>| − |R<sub>i</sub>−R<sub>i−1</sub>|) τ̂</span>
       <span class="eq">F<sub>NEB</sub> = F⊥ + F<sup>s</sup>∥</span>
-      <p>The “nudge” is the projection: the true force can’t drag images along the path (no sliding into minima), and springs can’t pull the band off the MEP (no corner-cutting). For <b>CI-NEB</b><sup class="c"><a href="#ref5">[5]</a></sup> the highest image drops its springs and has its parallel force inverted, <span style="font-family:ui-monospace,monospace">F = −∇V + 2(∇V·τ̂)τ̂</span>, so it climbs uphill along the path and downhill across it, converging exactly to the saddle.</p>
+      <p>The “nudge” is the projection: the true force can’t drag images along the path (no sliding into minima), and springs can’t pull the band off the MEP (no corner-cutting). For <b>CI-NEB</b><sup class="c"><a href="#ref5">[5]</a></sup> the highest image drops its springs and has its parallel force inverted, <span style="font-family:ui-monospace,monospace">F = −∇V + 2(∇V·τ̂)τ̂</span>, so it climbs uphill along the path and downhill across it, converging to a first-order saddle point. The page then checks the result: |∇V| below the threshold and a Hessian with one negative eigenvalue (det H &lt; 0).</p>
       <p>The arrows show the <b>net</b> force F on each image resolved against the tangent: F⊥ (red) and F∥ (blue). For NEB, F⊥ is exactly the projected true force and F∥ is exactly the spring force; for the other methods the split shows what the un-nudged forces do, e.g. a plain elastic band has a large F∥ from −∇V that drags images downhill. In 3D each arrow lies on the surface: an in-plane step d rises by ∇V·d [ε].</p>
       <h2 style="margin-top:12px">Things to try</h2>
       <ul>
@@ -292,14 +304,23 @@ footer a{color:var(--accent2)}
         <div class="stat"><small>max |F∥| [ε/L₀]</small><b id="sFl">—</b></div>
         <div class="stat"><small>highest image E [ε]</small><b id="sE">—</b></div>
         <div class="stat"><small>barrier from start, ΔE‡ [ε]</small><b id="sB">—</b></div>
-        <div class="stat" style="grid-column:1/-1"><small>highest image → nearest exact saddle: distance [L₀], energy gap [ε]</small><b id="sSad">—</b></div>
+        <div class="stat" style="grid-column:1/-1"><small>highest image → nearest validated saddle: distance [L₀], energy gap [ε]</small><b id="sSad">—</b></div>
         <div class="stat" style="grid-column:1/-1"><small>band → target MEP, largest distance of any image [L₀]</small><b id="sMep">—</b></div>
       </div>
+      <div class="outc" id="outcome"></div>
       <div class="sel" id="selInfo">Tap an image to inspect its force decomposition.</div>
     </div>
 
   </div>
 </div>
+
+<section class="card" id="validation">
+  <h2>Validation <span id="vSummary" class="pend">running…</span></h2>
+  <p style="margin:4px 0;font-size:14px">These checks run automatically in your browser every time the page loads, using the same code as the simulation (included under “Code used” below). They test the gradients, the stationary points, the NEB force decomposition, climbing-image convergence, sensitivity to the initial path, that unstable runs are never reported as converged, and that degenerate bands are caught.</p>
+  <div id="vWarn" class="outc bad" style="display:none"></div>
+  <table class="vt"><thead><tr><th>Check</th><th>What is tested</th><th>Result</th></tr></thead><tbody id="vBody"></tbody></table>
+  <div class="codebar"><button id="vRerun">Run checks again</button><span class="hint" id="vTime"></span></div>
+</section>
 
 <section class="card refs" id="refs">
   <h2>References</h2>
@@ -354,7 +375,7 @@ function makeTilted(){
     V(x,y){const u=y-0.8*(1-x*x);return (x*x-1)**2+3*u*u+0.3*x;},
     G(x,y){const u=y-0.8*(1-x*x);return [4*x*(x*x-1)+9.6*x*u+0.3,6*u];},
     minGuess:[[-1.04,0],[0.96,0]],sadGuess:[[0.08,0.8]],
-    ends:[0,1],k:8,dtQM:0.09,dtSD:0.015,tol:0.003,fmt:3
+    ends:[0,1],k:8,dtQM:0.04,dtSD:0.015,tol:0.003,fmt:3   // dtQM 0.04: 0/150 stalls in a robustness sweep (0.09 folded the band)
   };
 }
 function makeTwo(){
@@ -371,17 +392,35 @@ function makeTwo(){
 function hess(P,x,y){const h=1e-5;
   const a1=P.G(x+h,y),a0=P.G(x-h,y),b1=P.G(x,y+h),b0=P.G(x,y-h);
   return [(a1[0]-a0[0])/(2*h),((a1[1]-a0[1])+(b1[0]-b0[0]))/(4*h),(b1[1]-b0[1])/(2*h)];}
-function newton(P,x,y){
-  for(let it=0;it<80;it++){const g=P.G(x,y),H=hess(P,x,y),det=H[0]*H[2]-H[1]*H[1];
+// typical gradient size on the surface, used to make tolerances relative
+function gradScale(P){const b=P.bounds;let s=0,n=0;
+  for(let i=0;i<=8;i++)for(let j=0;j<=8;j++){const g=P.G(b[0]+(b[1]-b[0])*i/8,b[2]+(b[3]-b[2])*j/8);s+=Math.hypot(g[0],g[1]);n++;}
+  return Math.max(1e-12,s/n);}
+// classify a point from its gradient and Hessian (2D): first-order saddle <=> det H < 0
+function classify(P,x,y){
+  const g=P.G(x,y),H=hess(P,x,y),det=H[0]*H[2]-H[1]*H[1],tr=H[0]+H[2],gn=Math.hypot(g[0],g[1]);
+  const hs=Math.abs(H[0])+Math.abs(H[2])+2*Math.abs(H[1]);
+  const type=Math.abs(det)<1e-10*hs*hs?'degenerate':det<0?'saddle':tr>0?'minimum':'maximum';
+  return {gnorm:gn,det,tr,type,stationary:gn<1e-9*P.gscale};
+}
+// Newton's method; returns [x, y, E] with .ok/.type/.gnorm/.det/.iters attached
+function newton(P,x,y,expected){
+  let it=0;
+  for(;it<80;it++){const g=P.G(x,y),H=hess(P,x,y),det=H[0]*H[2]-H[1]*H[1];
     if(Math.abs(det)<1e-14)break;
     let dx=-(H[2]*g[0]-H[1]*g[1])/det,dy=-(-H[1]*g[0]+H[0]*g[1])/det;
     const m=Math.hypot(dx,dy);if(m>0.1){dx*=0.1/m;dy*=0.1/m;}
     x+=dx;y+=dy;if(m<1e-12)break;}
-  return [x,y,P.V(x,y)];
+  const c=classify(P,x,y),out=[x,y,P.V(x,y)];
+  Object.assign(out,c,{iters:it,expected,ok:c.stationary&&c.type===expected});
+  return out;
 }
 function initStationary(P){
-  P.minima=P.minGuess.map(p=>newton(P,p[0],p[1]));
-  P.saddles=P.sadGuess.map(p=>newton(P,p[0],p[1]));
+  P.gscale=gradScale(P);
+  P.minima=P.minGuess.map(p=>newton(P,p[0],p[1],'minimum'));
+  P.saddles=P.sadGuess.map(p=>newton(P,p[0],p[1],'saddle'));
+  P.minimaV=P.minima.filter(m=>m.ok);P.saddlesV=P.saddles.filter(s=>s.ok);   // only validated points are drawn / used
+  P.statWarn=[...P.minima,...P.saddles].filter(q=>!q.ok).map(q=>`(${q[0].toFixed(3)}, ${q[1].toFixed(3)}): expected ${q.expected}, got ${q.type}, |grad V| = ${q.gnorm.toExponential(1)}`);
   P.cap=0.02*(P.bounds[1]-P.bounds[0]);
 }
 const POTENTIALS=[makeMB(),makeTilted(),makeTwo()];
@@ -396,18 +435,21 @@ function computeForces(P,R,k,method){
   tau[0]=nrm(R[1][0]-R[0][0],R[1][1]-R[0][1]);
   tau[n-1]=nrm(R[n-1][0]-R[n-2][0],R[n-1][1]-R[n-2][1]);
   Fpot[0]=Fspr[0]=F[0]=Fper[0]=Fpar[0]=[0,0];Fpot[n-1]=Fspr[n-1]=F[n-1]=Fper[n-1]=Fpar[n-1]=[0,0];
-  let maxF=0;
+  let maxF=0,degenerate=false;const segTol=1e-6*(P.bounds[1]-P.bounds[0]);
   for(let i=1;i<n-1;i++){
     const tp=[R[i+1][0]-R[i][0],R[i+1][1]-R[i][1]],tm=[R[i][0]-R[i-1][0],R[i][1]-R[i-1][1]];
+    const dp=Math.hypot(tp[0],tp[1]),dm=Math.hypot(tm[0],tm[1]);
+    if(dp<segTol||dm<segTol)degenerate=true;          // coincident neighbours: tangent not well defined
     const Ep=E[i+1],E0=E[i],Em=E[i-1];
     let t;
     if(Ep>E0&&E0>Em)t=tp;
     else if(Ep<E0&&E0<Em)t=tm;
     else{const dmax=Math.max(Math.abs(Ep-E0),Math.abs(Em-E0)),dmin=Math.min(Math.abs(Ep-E0),Math.abs(Em-E0));
       t=Ep>Em?[tp[0]*dmax+tm[0]*dmin,tp[1]*dmax+tm[1]*dmin]:[tp[0]*dmin+tm[0]*dmax,tp[1]*dmin+tm[1]*dmax];}
-    t=nrm(t[0],t[1]);tau[i]=t;
+    if(Math.hypot(t[0],t[1])<1e-14*(1+dp+dm))t=[R[i+1][0]-R[i-1][0],R[i+1][1]-R[i-1][1]];   // fallback: chord
+    if(Math.hypot(t[0],t[1])<1e-14){t=[0,0];degenerate=true;}else t=nrm(t[0],t[1]);
+    tau[i]=t;
     const g=G[i],gp=g[0]*t[0]+g[1]*t[1];
-    const dp=Math.hypot(tp[0],tp[1]),dm=Math.hypot(tm[0],tm[1]);
     const perp=[-g[0]+gp*t[0],-g[1]+gp*t[1]],springPar=[k*(dp-dm)*t[0],k*(dp-dm)*t[1]];
     let fp,fs;
     switch(method){
@@ -422,7 +464,7 @@ function computeForces(P,R,k,method){
     const fl=F[i][0]*t[0]+F[i][1]*t[1];Fpar[i]=[fl*t[0],fl*t[1]];Fper[i]=[F[i][0]-Fpar[i][0],F[i][1]-Fpar[i][1]];
     maxF=Math.max(maxF,Math.hypot(F[i][0],F[i][1]));
   }
-  return {E,G,tau,Fpot,Fspr,F,Fper,Fpar,imax,maxF};
+  return {E,G,tau,Fpot,Fspr,F,Fper,Fpar,imax,maxF,degenerate};
 }
 
 function stepBand(P,st){
@@ -468,6 +510,83 @@ function resample(R,n){
     out.push([R[j][0]+(R[j+1][0]-R[j][0])*u,R[j][1]+(R[j+1][1]-R[j][1])*u]);}
   out[0]=[...R[0]];out[n-1]=[...R[R.length-1]];return out;
 }
+
+// ---- run outcomes (shared by the live simulation and the validation tests) ----
+const RUNCFG={maxIter:20000,stallWindow:1500,stallImprove:0.999};
+const NEB_METHODS={neb:1,ci:1,perp:1};          // methods whose force uses the tangent projection
+function newMonitor(it0){return {best:Infinity,bestIt:it0,start:it0};}
+// returns 'running' | 'converged' | 'stalled' | 'maxiter' | 'invalid'
+function judge(mon,it,f,tol,method){
+  if(!isFinite(f.maxF))return 'invalid';
+  if(f.degenerate&&NEB_METHODS[method])return 'invalid';
+  if(f.maxF<tol&&it>mon.start)return 'converged';
+  if(f.maxF<mon.best*RUNCFG.stallImprove){mon.best=f.maxF;mon.bestIt=it;}
+  if(it-mon.bestIt>=RUNCFG.stallWindow)return 'stalled';
+  if(it-mon.start>=RUNCFG.maxIter)return 'maxiter';
+  return 'running';
+}
+function runBand(P,o){
+  const R=o.R||makePath(P,o.n||9,o.init||'straight',o.seed||3),k=P.k*(o.kMul||1),tol=P.tol*(o.tolMul||1),method=o.method||'ci';
+  const st={R,vel:R.map(()=>[0,0]),k,method,opt:o.opt||'qm',dtMul:o.dtMul||1},mon=newMonitor(0);
+  let it=0,out='running',f=computeForces(P,R,k,method);
+  while(out==='running'){stepBand(P,st);it++;f=computeForces(P,R,k,method);out=judge(mon,it,f,tol,method);}
+  return {outcome:out,it,f,R,tol};
+}
+function nearestSaddle(P,p){let best=null,d=Infinity;P.saddlesV.forEach(s=>{const q=Math.hypot(p[0]-s[0],p[1]-s[1]);if(q<d){d=q;best=s;}});return {s:best,d};}
+function fmtNum(v){return Math.abs(v)>=100?v.toFixed(2):v.toFixed(3);}
+
+// ---- validation suite: runs in the browser on page load (and in Node for regression tests) ----
+const VALIDATION_TESTS=[
+ {name:'Analytical gradients',desc:'∇V from each formula vs. central finite differences at 300 random points per surface (relative error < 10⁻⁵).',
+  run(){let seed=11;const rnd=()=>{seed=(seed*1103515245+12345)%2147483648;return seed/2147483648;};const parts=[];let pass=true;
+   for(const P of POTENTIALS){let worst=0;const b=P.bounds;
+     for(let k=0;k<300;k++){const x=b[0]+rnd()*(b[1]-b[0]),y=b[2]+rnd()*(b[3]-b[2]),g=P.G(x,y),h=1e-6*(b[1]-b[0]);
+       const fx=(P.V(x+h,y)-P.V(x-h,y))/(2*h),fy=(P.V(x,y+h)-P.V(x,y-h))/(2*h);
+       worst=Math.max(worst,Math.hypot(g[0]-fx,g[1]-fy)/Math.max(P.gscale*1e-3,Math.hypot(g[0],g[1])));}
+     pass=pass&&worst<1e-5;parts.push(`${P.label}: ${worst.toExponential(1)}`);}
+   return {pass,detail:'max relative error: '+parts.join(' · ')};}},
+ {name:'Stationary points',desc:'Every marked point has |∇V| ≈ 0; saddles have det H < 0 (exactly one negative eigenvalue), minima det H > 0 and tr H > 0.',
+  run(){let nS=0,nM=0,worstG=0;const bad=[];
+   for(const P of POTENTIALS){[...P.minima,...P.saddles].forEach(q=>{worstG=Math.max(worstG,q.gnorm/P.gscale);if(q.ok){q.expected==='saddle'?nS++:nM++;}else bad.push(`${P.label} ${q.expected}: got ${q.type}`);});}
+   return {pass:bad.length===0,detail:bad.length?'FAILED: '+bad.join('; '):`${nS} first-order saddles and ${nM} minima verified · largest |∇V| relative to typical |∇V|: ${worstG.toExponential(1)}`};}},
+ {name:'NEB force decomposition',desc:'On random bands: |τ̂| = 1, F⊥ ⟂ τ̂, spring force ∥ τ̂, F⊥ points downhill (F⊥·(−∇V) ≥ 0), and the spring force has the sign of (|Rᵢ₊₁−Rᵢ| − |Rᵢ−Rᵢ₋₁|).',
+  run(){let wp=0,ws=0,wt=0,signs=0,checks=0;
+   for(const P of POTENTIALS)for(const seed of [3,5,8,13]){const R=makePath(P,9,'wiggle',seed),f=computeForces(P,R,P.k,'neb');
+     for(let i=1;i<R.length-1;i++){const t=f.tau[i],g=f.G[i],gn=Math.hypot(g[0],g[1])||1,sn=Math.hypot(...f.Fspr[i]);
+       wt=Math.max(wt,Math.abs(Math.hypot(t[0],t[1])-1));
+       wp=Math.max(wp,Math.abs(f.Fpot[i][0]*t[0]+f.Fpot[i][1]*t[1])/gn);
+       if(sn>0)ws=Math.max(ws,Math.abs(-f.Fspr[i][0]*t[1]+f.Fspr[i][1]*t[0])/sn);
+       const tp=Math.hypot(R[i+1][0]-R[i][0],R[i+1][1]-R[i][1]),tm=Math.hypot(R[i][0]-R[i-1][0],R[i][1]-R[i-1][1]);
+       const downhill=-(f.Fpot[i][0]*g[0]+f.Fpot[i][1]*g[1])>=-1e-12*gn*gn;
+       const sp=f.Fspr[i][0]*t[0]+f.Fspr[i][1]*t[1],springSign=Math.abs(tp-tm)<1e-12||Math.sign(sp)===Math.sign(tp-tm);
+       checks++;if(downhill&&springSign)signs++;}}
+   const pass=wt<1e-12&&wp<1e-10&&ws<1e-10&&signs===checks;
+   return {pass,detail:`||τ̂|−1| ${wt.toExponential(0)} · |F⊥·τ̂|/|∇V| ${wp.toExponential(0)} · spring off-axis ${ws.toExponential(0)} · signs correct ${signs}/${checks}`};}},
+ {name:'Climbing-image convergence',desc:'CI-NEB with default settings and threshold ×0.01 must converge; at the climbing image |∇V| must be below the threshold, det H < 0, and it must sit on a validated saddle.',
+  run(){const parts=[];let pass=true;
+   for(const P of POTENTIALS){const r=runBand(P,{method:'ci',tolMul:0.01}),p=r.R[r.f.imax],c=classify(P,p[0],p[1]),ns=nearestSaddle(P,p);
+     const ok=r.outcome==='converged'&&c.gnorm<r.tol&&c.det<0&&ns.d<1e-3*(P.bounds[1]-P.bounds[0]);pass=pass&&ok;
+     parts.push(`${P.label}: ${r.outcome} at ${r.it}, |∇V| ${c.gnorm.toExponential(1)}, det H<0 ${c.det<0?'✓':'✗'}, d ${ns.d.toExponential(1)} L₀${ok?'':' ✗'}`);}
+   return {pass,detail:parts.join(' · ')};}},
+ {name:'Path sensitivity',desc:'CI-NEB from 4 initial paths × 2 image counts × 2 spring constants on each surface: every run must converge onto a validated saddle. The saddles reached are listed.',
+  run(){const parts=[];let pass=true,runs=0;
+   for(const P of POTENTIALS){const hit=new Set();let bad=0;
+     for(const init of ['straight','arcL','arcR','wiggle'])for(const n of [7,11])for(const kMul of [0.5,2]){
+       const r=runBand(P,{method:'ci',init,n,kMul,tolMul:0.01});runs++;const ns=nearestSaddle(P,r.R[r.f.imax]);
+       if(r.outcome!=='converged'||ns.d>1e-3*(P.bounds[1]-P.bounds[0]))bad++;else hit.add(fmtNum(ns.s[2]));}
+     pass=pass&&bad===0;parts.push(`${P.label}: ${16-bad}/16 → saddle E = ${[...hit].join(', ')}`);}
+   return {pass,detail:`${runs} runs · `+parts.join(' · ')};}},
+ {name:'Optimizer robustness',desc:'Both optimizers at step size ×0.3, ×1 and ×3 on every surface. A run may converge, stall or hit the iteration limit, but it must never be labelled converged unless it is on a validated saddle.',
+  run(){const tally={converged:0,stalled:0,maxiter:0,invalid:0};let falseConv=0,runs=0;
+   for(const P of POTENTIALS)for(const opt of ['qm','sd'])for(const dtMul of [0.3,1,3]){
+     const r=runBand(P,{method:'ci',opt,dtMul,tolMul:0.1});runs++;tally[r.outcome]++;
+     if(r.outcome==='converged'&&nearestSaddle(P,r.R[r.f.imax]).d>1e-2*(P.bounds[1]-P.bounds[0]))falseConv++;}
+   return {pass:falseConv===0,detail:`${runs} runs: ${tally.converged} converged (all on a validated saddle${falseConv?', except '+falseConv:''}), ${tally.stalled} stalled, ${tally.maxiter} hit the iteration limit, ${tally.invalid} invalid · false convergence: ${falseConv}`};}},
+ {name:'Degenerate band detection',desc:'Two coincident images must be detected: the tangent stays finite (falls back to the chord) and the run is reported as an invalid band, never silently used.',
+  run(){const P=POTENTIALS[1],R=makePath(P,5,'straight',3);R[3]=[...R[2]];const f=computeForces(P,R,P.k,'neb');
+   const finite=f.tau.every(t=>isFinite(t[0])&&isFinite(t[1]));const out=judge(newMonitor(0),1,f,P.tol,'neb');
+   return {pass:f.degenerate&&finite&&out==='invalid',detail:`degenerate flag: ${f.degenerate} · run outcome: ${out} · tangents finite: ${finite}`};}}
+];
 // ===================== PHYSICS-END =====================
 
 // ===================== UI =====================
@@ -478,7 +597,7 @@ const U={L:'L₀',E:'ε',F:'ε/L₀',K:'ε/L₀²'};
 let P=POTENTIALS[0];
 const S={sel:5,nInt:9,kExp:0,dtMul:1,rate:2,method:'neb',opt:'qm',init:'straight',running:false,iter:0,
   R:[],vel:[],hist:[],initProf:null,sel:-1,converged:false,f:null,
-  arrowMode:'one',ptab:'prof',tolExp:0,trace:[],marks:[],convIt:-1,showAll:true,showTrue:false,pal:'soft',surfStyle:'shaded',showMEP:false,showHist:true,showStat:true,showTan:true,mesh:true,auto:false,view:'3d',seed:1};
+  arrowMode:'one',ptab:'prof',outcome:null,mon:newMonitor(0),stops:[],tolExp:0,trace:[],marks:[],convIt:-1,showAll:true,showTrue:false,pal:'soft',surfStyle:'shaded',showMEP:false,showHist:true,showStat:true,showTan:true,mesh:true,auto:false,view:'3d',seed:1};
 const V3={az:-50,el:32,zoom:1};
 let target=null,ready=false,bg=null,W=0,H=0,W3=0,H3=0,dpr=1,dirty=true,surf=null,surfCache=null,surfKey='';
 
@@ -486,6 +605,7 @@ POTENTIALS.forEach((p,i)=>{const o=document.createElement('option');o.value=i;o.
 
 function kVal(){return P.k*Math.pow(10,S.kExp);}
 function tolVal(){return P.tol*Math.pow(10,S.tolExp);}
+function resume(){S.mon=newMonitor(S.iter);S.outcome=null;}
 function metrics(f){let mp=0,ml=0,ss=0,m=0;const n=f.F.length;
   for(let i=1;i<n-1;i++){const a=Math.hypot(...f.Fper[i]),b=Math.hypot(...f.Fpar[i]);mp=Math.max(mp,a);ml=Math.max(ml,b);ss+=a*a;m++;}
   return {maxF:f.maxF,maxPer:mp,maxPar:ml,rmsPer:Math.sqrt(ss/Math.max(1,m))};}
@@ -682,8 +802,8 @@ function draw3D(){
   // stationary points
   if(S.showStat){
     c.font='13px ui-monospace,Menlo,monospace';c.textAlign='left';
-    P.minima.forEach(m=>{const s=proj(m[0],m[1],m[2]);c.strokeStyle='#fff';c.lineWidth=1.6;c.beginPath();c.arc(s[0],s[1],5,0,7);c.stroke();});
-    P.saddles.forEach(m=>{const s=proj(m[0],m[1],m[2]);xMark(c,s[0],s[1]);label(c,s[0]+9,s[1]-8,`TS ${fmtE(m[2])} ${U.E}`);});
+    P.minimaV.forEach(m=>{const s=proj(m[0],m[1],m[2]);c.strokeStyle='#fff';c.lineWidth=1.6;c.beginPath();c.arc(s[0],s[1],5,0,7);c.stroke();});
+    P.saddlesV.forEach(m=>{const s=proj(m[0],m[1],m[2]);xMark(c,s[0],s[1]);label(c,s[0]+9,s[1]-8,`TS ${fmtE(m[2])} ${U.E}`);});
   }
   // target MEP: a wide translucent guide the band should settle into
   if(S.showMEP&&target){
@@ -778,10 +898,10 @@ function distToTarget(){
 // ---------------- state ----------------
 function reset(keepPath){
   if(!keepPath)S.R=makePath(P,S.nInt,S.init,S.seed);
-  S.vel=S.R.map(()=>[0,0]);S.iter=0;S.converged=false;
+  S.vel=S.R.map(()=>[0,0]);S.iter=0;S.converged=false;resume();
   S.hist=[S.R.map(p=>[...p])];
   S.f=computeForces(P,S.R,kVal(),S.method);
-  S.trace=[];S.marks=[];S.convIt=-1;record();
+  S.trace=[];S.marks=[];S.stops=[];S.convIt=-1;record();
   S.initProf=profileOf(S.R,S.f);
   computeTarget();
   if(!(S.sel>0&&S.sel<S.R.length-1))S.sel=Math.floor(S.R.length/2);
@@ -797,7 +917,8 @@ function doStep(){
   S.iter++;
   if(S.iter%4===0){S.hist.push(S.R.map(p=>[...p]));if(S.hist.length>40)S.hist.splice(1,1);}
   S.f=computeForces(P,S.R,kVal(),S.method);record();
-  if(S.f.maxF<tolVal()&&S.iter>2){S.converged=true;S.convIt=S.iter;}
+  const out=judge(S.mon,S.iter,S.f,tolVal(),S.method);
+  if(out!=='running'){S.converged=true;S.outcome=out;S.convIt=S.iter;S.stops.push({it:S.iter,outcome:out});}
 }
 
 // ---------------- 2D drawing ----------------
@@ -826,8 +947,8 @@ function drawMap(){
     c.setLineDash([]);
   }
   if(S.showStat){
-    P.minima.forEach(m=>{const [x,y]=w2s(m[0],m[1]);c.strokeStyle='#fff';c.lineWidth=1.5;c.beginPath();c.arc(x,y,5,0,7);c.stroke();});
-    P.saddles.forEach(s=>{const [x,y]=w2s(s[0],s[1]);xMark(c,x,y);label(c,x+10,y-8,`TS  E = ${fmtE(s[2])} ${U.E}`);});
+    P.minimaV.forEach(m=>{const [x,y]=w2s(m[0],m[1]);c.strokeStyle='#fff';c.lineWidth=1.5;c.beginPath();c.arc(x,y,5,0,7);c.stroke();});
+    P.saddlesV.forEach(s=>{const [x,y]=w2s(s[0],s[1]);xMark(c,x,y);label(c,x+10,y-8,`TS  E = ${fmtE(s[2])} ${U.E}`);});
   }
   const f=S.f,R=S.R,n=R.length;
   c.lineJoin='round';c.lineCap='round';
@@ -891,7 +1012,7 @@ function drawProfile(){
   let lo=Infinity,hi=-Infinity;
   const tpr=(S.showMEP&&target)?target.prof:null;
   [cur.E,ini.E].concat(tpr?[tpr.E]:[]).forEach(a=>a.forEach(e=>{lo=Math.min(lo,e);hi=Math.max(hi,e);}));
-  P.saddles.forEach(s=>{hi=Math.max(hi,s[2]);lo=Math.min(lo,s[2]);});
+  P.saddlesV.forEach(s=>{hi=Math.max(hi,s[2]);lo=Math.min(lo,s[2]);});
   hi=Math.min(hi,P.clip[1]+(P.clip[1]-P.clip[0])*0.6);
   const span=(hi-lo)||1;lo-=span*0.06;hi+=span*0.1;
   const sMax=Math.max(cur.s[cur.s.length-1],ini.s[ini.s.length-1],tpr?tpr.s[tpr.s.length-1]:0)||1;
@@ -902,7 +1023,7 @@ function drawProfile(){
   c.save();c.translate(15,pad.t+ph/2);c.rotate(-Math.PI/2);c.fillText(`E [${U.E}]`,0,0);c.restore();
   c.textAlign='center';niceTicks(0,sMax,5).forEach(t=>{c.fillText(fmtTick(t),X(t),pad.t+ph+18);});
   c.setLineDash([5,4]);c.strokeStyle=acc2;c.lineWidth=1.3;c.textAlign='right';
-  P.saddles.forEach(s=>{const y=Y(s[2]);c.beginPath();c.moveTo(pad.l,y);c.lineTo(w-pad.r,y);c.stroke();
+  P.saddlesV.forEach(s=>{const y=Y(s[2]);c.beginPath();c.moveTo(pad.l,y);c.lineTo(w-pad.r,y);c.stroke();
     c.fillStyle=acc2;c.fillText(`saddle ${fmtE(s[2])} ${U.E}`,w-pad.r-2,y-4);});
   c.setLineDash([]);
   c.globalAlpha=0.5;drawCurve(c,ini,X,Y,muted,1.5);c.globalAlpha=1;
@@ -924,20 +1045,42 @@ function niceTicks(a,b,n){const r=(b-a)/n,p=Math.pow(10,Math.floor(Math.log10(r)
   const out=[];for(let v=Math.ceil(a/st)*st;v<=b+1e-9;v+=st)out.push(+v.toFixed(10));return out;}
 function fmtTick(v){return Math.abs(v)>=10?v.toFixed(0):v.toFixed(Math.abs(v)<1?2:1);}
 
+const MNAME={neb:'NEB',ci:'Climbing-image NEB',eb:'plain elastic band',perp:'F⊥ only (no springs)',free:'−∇V only'};
+function outcomeText(f){
+  const tol=tolVal(),a=`${fv([f.maxF,0])} ${U.F}`,b=`${fv([tol,0])} ${U.F}`,it=S.convIt;
+  const nebPer=()=>{const g=computeForces(P,S.R,kVal(),'neb');let m=0;for(let i=1;i<S.R.length-1;i++)m=Math.max(m,Math.hypot(...g.Fpot[i]));return m;};
+  if(!S.converged){
+    const live=S.running?'running':(S.iter?'paused':'idle');
+    return [S.running?'run':'idle',live,'',`max|F| = ${a}  vs  threshold ${b}. A run stops as converged (max|F| < threshold), stalled (no improvement for ${RUNCFG.stallWindow} iterations), at the ${RUNCFG.maxIter}-iteration limit, or if the band becomes invalid.`];}
+  switch(S.outcome){
+    case 'converged':{
+      if(S.method==='neb'||S.method==='ci'){
+        let txt=`Converged at iteration ${it}: max|F| = ${a} < threshold ${b}.`;
+        if(S.method==='ci'){const p=S.R[f.imax],c=classify(P,p[0],p[1]),ns=nearestSaddle(P,p);
+          const okS=c.det<0;txt+=` Climbing image: |∇V| = ${fv([c.gnorm,0])} ${U.F}, det H ${okS?'< 0 → first-order saddle ✓':'≥ 0 → NOT a first-order saddle ✗'}`+(ns.s?`, ${ns.d.toExponential(1)} ${U.L} from the validated saddle (E = ${fmtE(ns.s[2])} ${U.E}).`:'.');
+          return okS?['ok','converged','ok',txt]:['warn','converged · check','warn',txt];}
+        return ['ok','converged','ok',txt+' Switch to Climbing-image NEB to converge the top image onto the saddle point.'];}
+      const m=nebPer();
+      if(S.method==='perp')return ['warn','converged · no springs','warn',`Stopped at iteration ${it}: F⊥ < threshold ${b}, so the band lies along a minimum-energy path (true NEB max|F⊥| = ${fv([m,0])} ${U.F}), but without springs the image spacing is not controlled.`];
+      return ['warn','converged · not an MEP','warn',`Stopped at iteration ${it}: the forces of “${MNAME[S.method]}” are below ${b}, but this is not NEB. The true NEB perpendicular force on this band is max|F⊥| = ${fv([m,0])} ${U.F}`+(m>=tol?', above the threshold, so this band is NOT a minimum-energy path.':'.')+(f.degenerate?' Images have collapsed onto each other (into the minima), so the band no longer describes a path at all.':'')];}
+    case 'stalled':return ['warn','stalled','warn',`Stalled at iteration ${it}: max|F| has not decreased for ${RUNCFG.stallWindow} iterations (best ${fv([S.mon.best,0])} ${U.F} > threshold ${b}). Not converged. Try a smaller step size or the other optimizer, then press Run.`];
+    case 'maxiter':return ['warn','iteration limit','warn',`Stopped after ${RUNCFG.maxIter} iterations without converging: max|F| = ${a} > threshold ${b}. Try a larger step size or quick-min, then press Run to continue.`];
+    case 'invalid':return ['bad','invalid band','bad',f.degenerate?`Invalid at iteration ${it}: two neighbouring images coincide (gap < 10⁻⁶ of the box width), so the path tangent is undefined and NEB forces cannot be trusted. Press Reset.`:`Invalid at iteration ${it}: forces became non-finite. Reduce the step size and press Reset.`];
+  }
+  return ['idle','—','',''];
+}
 function updateStatus(){
   const f=S.f;if(!f)return;
   $('sIter').textContent=S.iter;
   $('sF').textContent=`${fv([f.maxF,0])} ${U.F}`;{const m=metrics(f);$('sFp').textContent=`${fv([m.maxPer,0])} ${U.F}`;$('sFl').textContent=`${fv([m.maxPar,0])} ${U.F}`;}
   const Emax=f.E[f.imax];$('sE').textContent=`${fmtE(Emax)} ${U.E}`;
   $('sB').textContent=`${fmtE(Emax-f.E[0])} ${U.E}`;
-  const p=S.R[f.imax];let best=null,bd=Infinity;
-  P.saddles.forEach(s=>{const d=Math.hypot(p[0]-s[0],p[1]-s[1]);if(d<bd){bd=d;best=s;}});
-  $('sSad').textContent=`d = ${bd.toFixed(4)} ${U.L},  ΔE = ${(Emax-best[2]).toPrecision(3)} ${U.E}`;
+  {const ns=nearestSaddle(P,S.R[f.imax]);
+   $('sSad').textContent=ns.s?`d = ${ns.d.toFixed(4)} ${U.L},  ΔE = ${(Emax-ns.s[2]).toPrecision(3)} ${U.E}`:'no validated saddle on this surface';}
   const dm=distToTarget();$('sMep').textContent=isNaN(dm)?'—':`${dm.toFixed(4)} ${U.L}  (${(100*dm/(P.bounds[1]-P.bounds[0])).toFixed(2)}% of box width)`;
   const st=$('status');
-  if(S.converged){st.className='badge ok';st.textContent='converged';}
-  else if(S.running){st.className='badge run';st.textContent='running';}
-  else{st.className='badge idle';st.textContent=S.iter?'paused':'idle';}
+  const [bc,bt,oc,ot]=outcomeText(f);
+  st.className='badge '+bc;st.textContent=bt;const oe=$('outcome');oe.className='outc '+oc;oe.textContent=ot;
   $('play').textContent=S.running?'❚❚ Pause':'▶ Run';
   const i=S.sel;
   if(i>0&&i<S.R.length-1){
@@ -995,8 +1138,10 @@ function drawConv(){
     T.forEach((m,k)=>{const x=X(m.it),y=Math.min(yBot,Y(m[key]));k?c.lineTo(x,y):c.moveTo(x,y);});c.stroke();};
   line('maxF',css('--ink'),3.2);line('rmsPer','#e5383b',1.4,[4,3]);line('maxPer','#e5383b',1.6);line('maxPar','#1c7ed6',1.6);
   c.setLineDash([]);
-  if(S.convIt>=0){const x=X(S.convIt);c.strokeStyle='#2b8a3e';c.lineWidth=1.5;c.beginPath();c.moveTo(x,pad.t);c.lineTo(x,h-pad.b);c.stroke();
-    c.fillStyle='#2b8a3e';c.textAlign=x>w-120?'right':'left';c.fillText(`converged @ ${S.convIt}`,x+(x>w-120?-4:4),h-pad.b-6);}
+  S.stops.forEach((sp,k)=>{const x=X(sp.it),col=sp.outcome==='converged'?'#2b8a3e':sp.outcome==='invalid'?'#c92a2a':'#e8590c';
+    c.strokeStyle=col;c.lineWidth=1.5;c.beginPath();c.moveTo(x,pad.t);c.lineTo(x,h-pad.b);c.stroke();
+    const lab=`${sp.outcome==='maxiter'?'iteration limit':sp.outcome} @ ${sp.it}`;
+    c.fillStyle=col;c.textAlign=x>w-170?'right':'left';c.fillText(lab,x+(x>w-170?-4:4),h-pad.b-6-18*(k%3));});
 }
 function drawBars(){
   const c=pctx,w=prof.width/dpr,h=prof.height/dpr;c.setTransform(dpr,0,0,dpr,0,0);c.clearRect(0,0,w,h);
@@ -1016,7 +1161,7 @@ function drawBars(){
   c.fillStyle='#2b8a3e';c.textAlign='right';c.font='13px ui-monospace,Menlo,monospace';c.fillText(`threshold ${fv([tol,0])} ${U.F}`,w-pad.r-2,yt-5);
 }
 const TABNOTE={prof:'',
-  conv:'The run stops when max |F| — the largest net force |F⊥ + F∥| on any moving image — falls below the threshold set in Controls. On the MEP F⊥ → 0, and the spring part of F∥ → 0 once the images are evenly spaced. Both decay roughly geometrically (straight lines on this log plot), so each 10× tighter threshold costs about the same number of extra iterations. Lower the threshold and press Run to watch them keep falling.',
+  conv:'The run stops when max |F| — the largest net force |F⊥ + F∥| on any moving image — falls below the threshold set in Controls. On the MEP F⊥ → 0, and the spring part of F∥ → 0 once the images are evenly spaced. Both decay roughly geometrically (straight lines on this log plot), so each 10× tighter threshold costs about the same number of extra iterations. Lower the threshold and press Run to watch them keep falling. Vertical lines mark where a run stopped: green = converged, orange = stalled (no improvement for '+RUNCFG.stallWindow+' iterations) or iteration limit, red = invalid band.',
   bars:'Current |F⊥| and |F∥| on every moving image. A converged band has every bar below the green threshold line. Tap a bar’s image on the plot above to inspect it.'};
 function setTab(t){S.ptab=t;['Prof','Conv','Bars'].forEach(k=>{$('t'+k).classList.toggle('on',t===k.toLowerCase());$('lg'+k).style.display=t===k.toLowerCase()?'':'none';});
   $('tabNote').textContent=TABNOTE[t];$('tabNote').style.display=TABNOTE[t]?'':'none';dirty=true;}
@@ -1045,7 +1190,7 @@ map.addEventListener('pointerdown',e=>{const [px,py]=evPos(e,map);downPos=[px,py
 map.addEventListener('pointermove',e=>{const [px,py]=evPos(e,map);const [x,y]=s2w(px,py);
   $('hover').textContent=`x ${x.toFixed(3)} ${U.L}   y ${y.toFixed(3)} ${U.L}   E ${fmtE(P.V(x,y))} ${U.E}`;
   if(drag>=0&&downPos&&Math.hypot(px-downPos[0],py-downPos[1])>3){moved=true;
-    S.R[drag]=[x,y];S.vel=S.R.map(()=>[0,0]);S.converged=false;
+    S.R[drag]=[x,y];S.vel=S.R.map(()=>[0,0]);S.converged=false;resume();
     S.f=computeForces(P,S.R,kVal(),S.method);dirty=true;}
   map.style.cursor=nearest(px,py)>=0?'grab':'crosshair';});
 map.addEventListener('pointerup',e=>{if(!moved){const i=nearest(...evPos(e,map));S.sel=(i>0&&i<S.R.length-1)?i:-1;dirty=true;}
@@ -1083,18 +1228,18 @@ function syncOutputs(){
 }
 $('v3d').onclick=()=>setView('3d');$('v2d').onclick=()=>setView('2d');
 $('viewReset').onclick=()=>{V3.az=-50;V3.el=32;V3.zoom=1;dirty=true;};
-$('play').onclick=()=>{if(S.converged){S.converged=false;}S.running=!S.running;acc=S.running?1:0;dirty=true;};
-$('stepBtn').onclick=()=>{S.running=false;S.converged=false;doStep();dirty=true;};
+$('play').onclick=()=>{if(S.converged){S.converged=false;resume();}S.running=!S.running;acc=S.running?1:0;dirty=true;};
+$('stepBtn').onclick=()=>{S.running=false;if(S.converged){S.converged=false;resume();}doStep();dirty=true;};
 $('resetBtn').onclick=()=>{S.running=false;S.seed++;reset(false);};
 $('pot').onchange=e=>{P=POTENTIALS[+e.target.value];S.running=false;S.kExp=0;$('kk').value=0;S.sel=-1;sizeCanvases();reset(false);syncOutputs();};
 $('method').onchange=e=>{S.method=e.target.value;S.vel=S.R.map(()=>[0,0]);S.marks.push({it:S.iter,label:e.target.options[e.target.selectedIndex].text.split(' (')[0]});S.convIt=-1;
-  if(S.converged){S.running=true;acc=1;}S.converged=false;S.f=computeForces(P,S.R,kVal(),S.method);dirty=true;};
-$('opt').onchange=e=>{S.opt=e.target.value;S.vel=S.R.map(()=>[0,0]);S.converged=false;};
+  if(S.converged){S.running=true;acc=1;}S.converged=false;resume();S.f=computeForces(P,S.R,kVal(),S.method);dirty=true;};
+$('opt').onchange=e=>{S.opt=e.target.value;S.vel=S.R.map(()=>[0,0]);S.converged=false;resume();};
 $('init').onchange=e=>{S.init=e.target.value;S.running=false;S.seed++;reset(false);};
-$('nimg').oninput=e=>{S.nInt=+e.target.value;S.R=resample(S.R,S.nInt+2);S.vel=S.R.map(()=>[0,0]);S.converged=false;
+$('nimg').oninput=e=>{S.nInt=+e.target.value;S.R=resample(S.R,S.nInt+2);S.vel=S.R.map(()=>[0,0]);S.converged=false;resume();
   S.f=computeForces(P,S.R,kVal(),S.method);S.hist=[S.R.map(p=>[...p])];S.sel=Math.floor(S.R.length/2);syncOutputs();dirty=true;};
-$('kk').oninput=e=>{S.kExp=+e.target.value;S.converged=false;S.f=computeForces(P,S.R,kVal(),S.method);syncOutputs();dirty=true;};
-$('tol').oninput=e=>{S.tolExp=+e.target.value;if(S.converged&&S.f.maxF>=tolVal()){S.converged=false;}syncOutputs();dirty=true;};
+$('kk').oninput=e=>{S.kExp=+e.target.value;S.converged=false;resume();S.f=computeForces(P,S.R,kVal(),S.method);syncOutputs();dirty=true;};
+$('tol').oninput=e=>{S.tolExp=+e.target.value;if(S.converged&&(S.outcome!=='converged'||S.f.maxF>=tolVal())){S.converged=false;resume();}syncOutputs();dirty=true;};
 $('tProf').onclick=()=>setTab('prof');$('tConv').onclick=()=>setTab('conv');$('tBars').onclick=()=>setTab('bars');
 $('dt').oninput=e=>{S.dtMul=Math.pow(10,+e.target.value);syncOutputs();};
 $('speed').oninput=e=>{S.rate=Math.pow(10,+e.target.value);syncOutputs();};
@@ -1120,6 +1265,28 @@ let rt,lastW=-1;const onResize=()=>{clearTimeout(rt);rt=setTimeout(()=>{const w=
 window.addEventListener('resize',onResize);
 if(window.ResizeObserver)new ResizeObserver(onResize).observe($('mapWrap'));
 
+// ---------------- validation panel ----------------
+function runValidation(){
+  const body=$('vBody');body.innerHTML='';const rows=[];
+  VALIDATION_TESTS.forEach((t,k)=>{const tr=document.createElement('tr');
+    tr.innerHTML=`<td><b>${k+1}. ${t.name}</b></td><td>${t.desc}</td><td class="r"><b class="pend">pending</b></td>`;body.appendChild(tr);rows.push(tr);});
+  const warn=POTENTIALS.flatMap(P=>P.statWarn.map(w=>`${P.label}: ${w}`));
+  $('vWarn').style.display=warn.length?'':'none';$('vWarn').textContent=warn.length?'Unverified stationary points (not drawn): '+warn.join(' · '):'';
+  let k=0,npass=0;const t0=performance.now();$('vSummary').className='pend';$('vSummary').textContent='running…';$('vTime').textContent='';
+  const next=()=>{
+    if(k>=VALIDATION_TESTS.length){const all=npass===VALIDATION_TESTS.length;
+      $('vSummary').className=all?'pass':'fail';$('vSummary').textContent=`${npass} / ${VALIDATION_TESTS.length} passed`;
+      $('vTime').textContent=`completed in ${((performance.now()-t0)/1000).toFixed(1)} s`;return;}
+    let res;try{res=VALIDATION_TESTS[k].run();}catch(e){res={pass:false,detail:'error: '+e.message};}
+    if(res.pass)npass++;
+    const cell=rows[k].cells[2];cell.innerHTML='';
+    const b=document.createElement('b');b.className=res.pass?'pass':'fail';b.textContent=res.pass?'✓ pass':'✗ fail';
+    const d=document.createElement('span');d.className='d';d.textContent=res.detail;cell.append(b,d);
+    k++;setTimeout(next,30);};
+  setTimeout(next,400);
+}
+$('vRerun').onclick=runValidation;
+
 // ---------------- code viewer ----------------
 (function(){
   const src=PAGE_SOURCE.split('// ===================== PHYSICS-START =====================')[1].split('// ===================== PHYSICS-END')[0].trim();
@@ -1136,7 +1303,7 @@ if(window.ResizeObserver)new ResizeObserver(onResize).observe($('mapWrap'));
 })();
 
 S.rate=Math.pow(10,+$('speed').value);
-sizeCanvases();reset(false);syncOutputs();setView('3d');requestAnimationFrame(loop);
+sizeCanvases();reset(false);syncOutputs();setView('3d');runValidation();requestAnimationFrame(loop);
 </script>
 </body>
 </html>
